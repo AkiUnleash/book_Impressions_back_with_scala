@@ -101,4 +101,6 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 .bsp
 
+# Docker
+mysql/data
 
