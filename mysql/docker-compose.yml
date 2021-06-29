@@ -1,0 +1,11 @@
+version: "3"
+services:
+  mysql:
+    build: .
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_ROOT_PASSWORD=scala
+    ports:
+      - "3306:3306"
+    container_name: mysql-container-scala
