@@ -4,8 +4,9 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model._
 import controller.AccountController
-import model.Account
+import model.{Account, AccountPost}
 
+import java.util.UUID.randomUUID
 import scala.concurrent.ExecutionContextExecutor
 
 trait AccountRoutes extends SprayJsonSupport {
@@ -15,18 +16,24 @@ trait AccountRoutes extends SprayJsonSupport {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
 
   val routes = {
-    // 'http://localhost:8080/accounts'パス
-    pathPrefix("accounts") {
-      // '直下'
-      pathEnd {
+    pathPrefix("account") {
+      // Register Account
+      path("signup") {
         post {
-          entity(as[Account]) { account =>
+          entity(as[AccountPost]) { account =>
             complete {
-              create(account).map { result => HttpResponse(entity = "dog has been saved successfully") }
+              val accountPost = Account(
+                account.username,
+                account.email,
+                account.password,
+                randomUUID.toString()
+              )
+              create(accountPost).map { result => HttpResponse(entity = "dog has been saved successfully") }
             }
           }
         }
       }
+
     }
   }
 }
