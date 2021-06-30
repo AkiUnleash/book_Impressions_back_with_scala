@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ScalaCompilerConfiguration">
-    <profile name="sbt 1" modules="book_impressions_back_with_scala" />
+    <profile name="sbt 1" modules="book_Impressions_back_with_scala,book_impressions_back_with_scala" />
   </component>
 </project>
