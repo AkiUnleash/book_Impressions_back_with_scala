@@ -17,7 +17,7 @@ libraryDependencies ++= {
     "com.typesafe.akka" %% "akka-http-spray-json" % AkkaHttpVersion,
     "com.typesafe.slick" %% "slick" % SlickVersion,
     "com.typesafe.slick" %% "slick-hikaricp" % SlickVersion,
-    "mysql" % "mysql-connector-java" % MysqlVersion,
-    "org.springframework.security" % "spring-security-web" % springVersion,
+    "mysql" %% "mysql-connector-java" % MysqlVersion,
+    "com.github.t3hnar" %% "scala-bcrypt" % "4.1"
   )
 }

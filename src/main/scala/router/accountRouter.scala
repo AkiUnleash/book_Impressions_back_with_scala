@@ -7,6 +7,8 @@ import controller.AccountController
 import model.{Account, AccountPost}
 
 import java.util.UUID.randomUUID
+import com.github.t3hnar.bcrypt._
+
 import scala.concurrent.ExecutionContextExecutor
 
 trait AccountRoutes extends SprayJsonSupport {
@@ -25,7 +27,8 @@ trait AccountRoutes extends SprayJsonSupport {
               val accountPost = Account(
                 account.username,
                 account.email,
-                account.password,
+                "password".bcryptBounded,
+//                bcrypt.encode(account.password),
                 randomUUID.toString()
               )
               create(accountPost).map { result => HttpResponse(entity = "dog has been saved successfully") }
