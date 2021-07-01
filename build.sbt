@@ -19,5 +19,6 @@ libraryDependencies ++= {
     "com.typesafe.slick" %% "slick-hikaricp" % SlickVersion,
     "mysql" % "mysql-connector-java" % MysqlVersion,
     "org.springframework.security" % "spring-security-web" % springVersion,
+    "com.github.jwt-scala" %% "jwt-core" % "8.0.2",
   )
 }
