@@ -11,6 +11,8 @@ import pdi.jwt._
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 import java.util.UUID.randomUUID
+import java.sql.Date
+
 
 import scala.concurrent.ExecutionContextExecutor
 
@@ -29,11 +31,14 @@ trait AccountRoutes extends SprayJsonSupport {
           entity(as[AccountPost]) { account =>
             complete {
               val bcrypt = new BCryptPasswordEncoder()
+              val currentDate = new Date(System.currentTimeMillis())
               val accountPost = Account(
                 account.username,
                 account.email,
                 bcrypt.encode(account.password),
-                randomUUID.toString()
+                randomUUID.toString(),
+                currentDate,
+                currentDate,
               )
               create(accountPost).map { result => HttpResponse(entity = "dog has been saved successfully") }
             }

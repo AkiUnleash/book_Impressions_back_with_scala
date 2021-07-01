@@ -6,8 +6,12 @@ import spray.json.DeserializationException
 import spray.json.JsString
 import spray.json.JsValue
 import spray.json.JsonFormat
+
 import java.text.SimpleDateFormat
+import java.time.{LocalDate, LocalDateTime}
 import java.util.UUID
+import java.sql.Date
+
 
 // DefaultJsonProtocolを継承し、JSONを返すようにする
 trait AccountTable extends DefaultJsonProtocol {
@@ -15,8 +19,20 @@ trait AccountTable extends DefaultJsonProtocol {
   this: MySQLDBImpl =>
   import driver.api._
 
+  implicit object DateFormat extends JsonFormat[Date] {
+    val formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
+    def write(date: Date) = JsString(formatter.format(date))
+    def read(value: JsValue) = {
+      value match {
+        case JsString(date) => new Date(formatter.parse(date).getTime())
+
+        case _ => throw new DeserializationException("Expected JsString")
+      }
+    }
+  }
+
   // ClassとJSONの変換。フォーマット定義
-  implicit lazy val AccountFormat = jsonFormat5(Account)
+  implicit lazy val AccountFormat = jsonFormat7(Account)
   implicit lazy val AccountListFormat = jsonFormat1(AccountList)
   implicit lazy val AccountPostFormat = jsonFormat3(AccountPost)
 
@@ -29,12 +45,14 @@ trait AccountTable extends DefaultJsonProtocol {
     val username = column[String]("username")
     val email = column[String]("email")
     val password = column[String]("password")
+    val createAt = column[Date]("create_at")
+    val updateAt = column[Date]("update_at")
 
-    def * = (username, email, password, uuid, id.?) <>(Account.tupled, Account.unapply)
+    def * = (username, email, password, uuid, createAt, updateAt, id.?) <>(Account.tupled, Account.unapply)
   }
 }
 
 // 使用するケースクラス(データ形式)
-case class Account(username: String, email: String, password: String, uuid: String, id: Option[Int] = None)
+case class Account(username: String, email: String, password: String, uuid: String, createAt: Date, updateAt: Date, id: Option[Int] = None)
 case class AccountList(accounts: List[Account])
 case class AccountPost(username: String, email: String, password: String)
