@@ -35,6 +35,7 @@ trait AccountTable extends DefaultJsonProtocol {
   implicit lazy val AccountFormat = jsonFormat7(Account)
   implicit lazy val AccountListFormat = jsonFormat1(AccountList)
   implicit lazy val AccountPostFormat = jsonFormat3(AccountPost)
+  implicit lazy val LoginPostFormat = jsonFormat2(LoginPost)
 
   // テーブルスキーマの設定
   // 記述方法については以下を参照
@@ -56,3 +57,4 @@ trait AccountTable extends DefaultJsonProtocol {
 case class Account(username: String, email: String, password: String, uuid: String, createAt: Date, updateAt: Date, id: Option[Int] = None)
 case class AccountList(accounts: List[Account])
 case class AccountPost(username: String, email: String, password: String)
+case class LoginPost(email: String, password: String)

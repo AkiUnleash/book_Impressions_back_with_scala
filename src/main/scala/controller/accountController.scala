@@ -20,6 +20,11 @@ trait AccountController extends AccountTable with MySQLDBImpl {
     AccountTableAutoInc += account
   }
 
+  // アカウントからユーザー取得（ID指定）
+  def getByUser(email: String): Future[Option[Account]] = db.run {
+    AccountTableQuery.filter(_.email === email).result.headOption
+  }
+
   def AccountTableAutoInc =
     AccountTableQuery returning AccountTableQuery.map(_.id)
 }
