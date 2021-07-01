@@ -3,13 +3,17 @@ package router
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model._
+import akka.http.scaladsl.model.headers.HttpCookie
 import controller.AccountController
 import model.{Account, AccountPost}
+import java.time.Clock
+import pdi.jwt._
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 import java.util.UUID.randomUUID
-import com.github.t3hnar.bcrypt._
 
 import scala.concurrent.ExecutionContextExecutor
+
 
 trait AccountRoutes extends SprayJsonSupport {
   //  AccountControllerの処理を使用できるように追加
@@ -24,17 +28,37 @@ trait AccountRoutes extends SprayJsonSupport {
         post {
           entity(as[AccountPost]) { account =>
             complete {
+              val bcrypt = new BCryptPasswordEncoder()
               val accountPost = Account(
                 account.username,
                 account.email,
-                "password".bcryptBounded,
-//                bcrypt.encode(account.password),
+                bcrypt.encode(account.password),
                 randomUUID.toString()
               )
               create(accountPost).map { result => HttpResponse(entity = "dog has been saved successfully") }
             }
           }
         }
+      } ~ path("test"){
+        get {
+          cookie("jwt") { token =>
+//            val name = Jwt.decodeRawAll(token.value, "secretKey", Seq(JwtAlgorithm.HS256))
+            val name = Jwt.decodeRaw(token.value, "secretKey", Seq(JwtAlgorithm.HS256))
+            complete(s"The logged in user is '${name}'")
+          }
+        } ~
+        post {
+          implicit val clock: Clock = Clock.systemUTC
+          val token = Jwt.encode("akio", "secretKey", JwtAlgorithm.HS256)
+          setCookie(HttpCookie("jwt", value = token, httpOnly = true)) {
+            complete("The user was logged in")
+          }
+        } ~
+          delete {
+            deleteCookie("jwt") {
+              complete("The user was logged out")
+            }
+          }
       }
 
     }
