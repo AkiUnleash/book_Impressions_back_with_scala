@@ -4,7 +4,7 @@ import akka.http.scaladsl.server.Directives.{entity, _}
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model._
 import controller.AccountController
-import model.{Account, AccountPost, LoginPost}
+import model.{Account, AccountPost, LoginPost, UpdatePost}
 import auth.{jwt, cookie}
 
 import java.time.Clock
@@ -67,7 +67,16 @@ trait AccountRoutes extends SprayJsonSupport with jwt with cookie {
         get {
             cookie("jwt") { nameCookie =>
               complete( getByUserUuid(jwtDecode(nameCookie.value))) }
-        }
+        } ~
+          post {
+            entity(as[UpdatePost]) { account =>
+              cookie("jwt") { nameCookie =>
+                complete(
+                  updateUser(jwtDecode(nameCookie.value), account).map { result => HttpResponse(entity = "Account has been updated successfully") }
+                )
+              }
+            }
+          }
       }
 //      ~ path("test"){
 //        get {

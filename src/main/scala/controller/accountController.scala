@@ -1,7 +1,8 @@
 package controller
 
 import database.MySQLDBImpl
-import model.{Account, AccountTable}
+import model.{Account, AccountTable, UpdatePost}
+
 import scala.concurrent.Future
 
 trait AccountController extends AccountTable with MySQLDBImpl {
@@ -15,7 +16,7 @@ trait AccountController extends AccountTable with MySQLDBImpl {
     AccountTableQuery.schema.create
   }
 
-  // データ追加処理
+  // アカウント追加処理
   def create(account: Account): Future[Int] = db.run {
     AccountTableAutoInc += account
   }
@@ -29,7 +30,12 @@ trait AccountController extends AccountTable with MySQLDBImpl {
   def getByUserUuid(uuid: String): Future[Option[Account]] = db.run {
     AccountTableQuery.filter(_.uuid === uuid).result.headOption
   }
-  
+
+  // アカウントの更新
+  def updateUser(uuid: String, UpdatePost: UpdatePost): Future[Int] = db.run {
+    val q = for { l <- AccountTableQuery if l.uuid === uuid } yield (l.username, l.email)
+    q.update((UpdatePost.username, UpdatePost.email))
+  }
 
   def AccountTableAutoInc =
     AccountTableQuery returning AccountTableQuery.map(_.id)
