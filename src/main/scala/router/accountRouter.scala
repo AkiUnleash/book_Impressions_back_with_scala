@@ -63,6 +63,11 @@ trait AccountRoutes extends SprayJsonSupport with jwt with cookie {
         }
       } ~ path("logout") {
         post { delCookie() }
+      } ~ path("nowuser") {
+        get {
+            cookie("jwt") { nameCookie =>
+              complete( getByUserUuid(jwtDecode(nameCookie.value))) }
+        }
       }
 //      ~ path("test"){
 //        get {
