@@ -32,7 +32,7 @@ trait AccountTable extends DefaultJsonProtocol {
   }
 
   // ClassとJSONの変換。フォーマット定義
-  implicit lazy val AccountFormat = jsonFormat7(Account)
+  implicit lazy val AccountFormat = jsonFormat8(Account)
   implicit lazy val AccountListFormat = jsonFormat1(AccountList)
   implicit lazy val AccountPostFormat = jsonFormat3(AccountPost)
   implicit lazy val LoginPostFormat = jsonFormat2(LoginPost)
@@ -49,13 +49,14 @@ trait AccountTable extends DefaultJsonProtocol {
     val password = column[String]("password")
     val createAt = column[Date]("create_at")
     val updateAt = column[Date]("update_at")
+    val deleteAt = column[Option[Date]]("delete_at")
 
-    def * = (username, email, password, uuid, createAt, updateAt, id.?) <>(Account.tupled, Account.unapply)
+    def * = (username, email, password, uuid, createAt, updateAt, deleteAt, id.?) <>(Account.tupled, Account.unapply)
   }
 }
 
 // 使用するケースクラス(データ形式)
-case class Account(username: String, email: String, password: String, uuid: String, createAt: Date, updateAt: Date, id: Option[Int] = None)
+case class Account(username: String, email: String, password: String, uuid: String, createAt: Date, updateAt: Date, deleteAt: Option[Date], id: Option[Int] = None)
 case class AccountList(accounts: List[Account])
 case class AccountPost(username: String, email: String, password: String)
 case class LoginPost(email: String, password: String)

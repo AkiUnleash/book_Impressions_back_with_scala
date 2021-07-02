@@ -36,6 +36,7 @@ trait AccountRoutes extends SprayJsonSupport with jwt with cookie {
               randomUUID.toString(),
               currentDate,
               currentDate,
+              null
             )
             complete {
               create(accountPost).map { result => HttpResponse(entity = "Account has been saved successfully") }
@@ -72,32 +73,19 @@ trait AccountRoutes extends SprayJsonSupport with jwt with cookie {
             entity(as[UpdatePost]) { account =>
               cookie("jwt") { nameCookie =>
                 complete(
-                  updateUser(jwtDecode(nameCookie.value), account).map { result => HttpResponse(entity = "Account has been updated successfully") }
+                  updateUser(jwtDecode(nameCookie.value), account).map { result => HttpResponse(entity = "account has been updated successfully") }
                 )
               }
             }
+          } ~
+          delete {
+            cookie("jwt") { nameCookie =>
+              complete(
+                deleteUser(jwtDecode(nameCookie.value)).map { result => HttpResponse(entity = "account has been delete successfully") }
+              )
+            }
           }
       }
-//      ~ path("test"){
-//        get {
-//          cookie("jwt") { token =>
-//            val name = Jwt.decodeRaw(token.value, "secretKey", Seq(JwtAlgorithm.HS256))
-//            complete(s"The logged in user is '${name}'")
-//          }
-//        } ~
-//        post {
-//          implicit val clock: Clock = Clock.systemUTC
-//          val token = Jwt.encode("akio", "secretKey", JwtAlgorithm.HS256)
-//          setCookie(HttpCookie("jwt", value = token, httpOnly = true)) {
-//            complete("The user was logged in")
-//          }
-//        } ~
-//          delete {
-//            deleteCookie("jwt") {
-//              complete("The user was logged out")
-//            }
-//          }
-//      }
     }
   }
 }
